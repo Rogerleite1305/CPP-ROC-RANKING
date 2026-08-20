@@ -1,0 +1,56 @@
+================================================================================
+ MANUAL DE INSTRUÇÕES DE USO - SISTEMA CPP-ROC-RANKING
+================================================================================
+
+1. VISÃO GERAL
+--------------------------------------------------------------------------------
+O CPP-ROC-RANKING é uma ferramenta para apoio à tomada de decisão multicritério 
+em cenários de incerteza com múltiplos decisores. Ele combina a Composição 
+Probabilística de Preferências (CPP) com os pesos ROC (Rank Order Centroid) para 
+gerar uma ordenação completa de alternativas.
+
+
+2. PASSO A PASSO DE OPERAÇÃO
+--------------------------------------------------------------------------------
+
+PASSO 1: Configurar os Parâmetros Iniciais (Barra Lateral)
+  1. Abra a barra lateral esquerda (Configurações do Problema).
+  2. Defina o "Nº de Decisores" envolvidos no processo de avaliação.
+  3. Defina o "Nº de Alternativas" a serem comparadas (mínimo de 2).
+  4. Defina o "Nº de Critérios" de avaliação.
+  5. Em "Tipos de Critérios", selecione a natureza de cada critério:
+     - Benefício: Quanto maior a nota, melhor (ex: Qualidade, Lucro).
+     - Custo: Quanto menor a nota, melhor (ex: Preço, Tempo de Espera).
+
+PASSO 2: Nomear Alternativas e Critérios
+  1. Na área central, altere os nomes das alternativas nos campos "Alt 1", 
+     "Alt 2", etc., para facilitar a identificação dos resultados.
+  2. Os critérios serão nomeados automaticamente como "Critério 1", 
+     "Critério 2", etc.
+
+PASSO 3: Inserir as Notas dos Decisores
+  1. Navegue pelas abas superiores ("Decisor 1", "Decisor 2", ...).
+  2. Preencha as tabelas com as notas atribuídas por cada decisor para cada 
+     alternativa sob cada critério.
+  * Nota: A aplicação carrega valores aleatórios iniciais apenas como exemplo. 
+    Edite diretamente na célula desejada.
+
+PASSO 4: Definir a Ordem de Importância dos Critérios (ROC)
+  1. No campo "Preferência dos Critérios (ROC)", clique na caixa de seleção.
+  2. Selecione e ordene todos os critérios, do MAIS importante para o 
+     MENOS importante.
+  * Atenção: O cálculo só será liberado quando todos os critérios estiverem 
+    presentes na lista na ordem desejada.
+
+PASSO 5: Processar e Analisar os Resultados
+  1. Clique no botão azul "Processar Ranking Final".
+  2. A aplicação exibirá a tabela "Resultado Final do Ranking" ordenada da 1ª 
+     à última posição com seus respectivos scores.
+  3. Para inspecionar os cálculos intermediários, clique no menu retrátil 
+     "Ver Detalhes Numéricos":
+     - Pesos ROC Calculados: Mostra o peso numérico exato derivado da ordem 
+       definida.
+     - Matriz de Dominância Global (Pij): Mostra a probabilidade de uma 
+       alternativa i ser superior a uma alternativa j considerando o conjunto 
+       de decisores e critérios.
+================================================================================
