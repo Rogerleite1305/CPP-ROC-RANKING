@@ -2,6 +2,7 @@ import base64
 import datetime
 import io
 import math
+import os
 import re
 import matplotlib.pyplot as plt
 import numpy as np
@@ -649,12 +650,14 @@ with st.sidebar.expander("Identidade Corporativa (PDF)", expanded=False):
 # LOGO NO TOPO
 col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
 with col_l2:
-    url_logo_github = "https://raw.githubusercontent.com/Rogerleite1305/CPP-ROC-CHOISE/main/LOGO%20CPP-ROC-RANKING.png"
-    try:
-        st.image(url_logo_github, use_container_width=True)
-    except Exception:
+    caminho_logo_local = "logo-cpp-roc-ranking.png"
+    
+    if os.path.exists(caminho_logo_local):
+        st.image(caminho_logo_local, use_container_width=True)
+    else:
+        url_logo_github = "https://raw.githubusercontent.com/Rogerleite1305/CPP-ROC-CHOISE/main/logo-cpp-roc-ranking.png"
         try:
-            st.image("LOGO CPP-ROC-RANKING.png", use_container_width=True)
+            st.image(url_logo_github, use_container_width=True)
         except Exception:
             pass
 
