@@ -24,7 +24,7 @@ from reportlab.platypus import (
 import requests
 import streamlit as st
 
-# Importa o motor matemático analítico do CPP-ROC-RANKING (Eq. 1 a 18)
+# Importa o motor matemático analítico do CPP-ROC-RANKING
 from cpp_engine import processar_cpp_roc_ranking
 
 # ==========================================
@@ -55,7 +55,6 @@ class NumberedCanvas(canvas.Canvas):
         self.setFont("Helvetica", 8)
         self.setFillColor(colors.HexColor("#475569"))
 
-        # Rodapé com data/hora e numeração
         data_hora = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         texto_rodape = f"Relatório Gerado em: {data_hora} | Página {self._pageNumber} de {page_count}"
 
@@ -66,7 +65,6 @@ class NumberedCanvas(canvas.Canvas):
             "DSS CPP-ROC RANKING — Desenvolvido por RISE/UFAL © Todos os direitos reservados",
         )
 
-        # Linha divisória do rodapé
         self.setStrokeColor(colors.HexColor("#cbd5e1"))
         self.setLineWidth(0.5)
         self.line(36, 32, A4[0] - 36, 32)
@@ -162,7 +160,6 @@ def gerar_grafico_ranking(df_ranking, para_impressao=False):
     fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
     y_pos = np.arange(len(df_ranking))
 
-    # Inverter ordem para mostrar o 1º lugar no topo
     df_sorted = df_ranking.iloc[::-1]
 
     ax.barh(
@@ -174,7 +171,7 @@ def gerar_grafico_ranking(df_ranking, para_impressao=False):
     )
     ax.set_yticks(y_pos)
     ax.set_yticklabels(df_sorted["Alternativa"], fontsize=8)
-    ax.set_xlabel("Score Global Agregado (Eq. 16–18)", fontsize=9)
+    ax.set_xlabel("Score Global Agregado", fontsize=9)
     ax.set_title("Ranking das Alternativas", fontsize=10, fontweight="bold")
     ax.grid(axis="x", linestyle="--", alpha=0.3)
     ax.spines["top"].set_visible(False)
@@ -259,13 +256,12 @@ def gerar_pdf_relatorio(
         leading=10,
     )
 
-    # CABEÇALHO DO DOCUMENTO
     elements.append(
         Paragraph("RELATÓRIO EXECUTIVO DE TOMADA DE DECISÃO", title_style)
     )
     elements.append(
         Paragraph(
-            "SISTEMA CPP-ROC RANKING | ORDENAÇÃO COMPLETA MULTICRITÉRIO (EQUAÇÕES 1 A 18)",
+            "SISTEMA CPP-ROC RANKING | ORDENAÇÃO COMPLETA MULTICRITÉRIO",
             subtitle_style,
         )
     )
@@ -278,7 +274,6 @@ def gerar_pdf_relatorio(
         )
     )
 
-    # 1. TABELA DE RANKING FINAL
     vencedor_nome = df_ranking.iloc[0]["Alternativa"]
     vencedor_score = df_ranking.iloc[0]["Score CPP-RANKING"]
 
@@ -306,14 +301,13 @@ def gerar_pdf_relatorio(
     elements.append(t_rec)
     elements.append(Spacer(1, 6))
 
-    # 2. ANÁLISE GRÁFICA
     buf_grafico = gerar_grafico_ranking(df_ranking, para_impressao=True)
     img_grafico = RLImage(buf_grafico, width=460, height=160)
 
     texto_analitico = f"""
     <b>Interpretação Executiva para a Problemática de Ordenação (Ranking):</b><br/>
     • A alternativa classificada em 1º lugar foi <b>{vencedor_nome}</b> com Score Global de <b>{vencedor_score:.4f}</b>.<br/>
-    • A ordenação considera a integração da matriz de probabilidade de dominância par a par $P_{{ij}}$ (Eq. 8–12) com a ponderação ROC (Eq. 1) entre os {n_dms} decisores.
+    • A ordenação considera a integração da matriz de probabilidade de dominância par a par com a ponderação ROC entre os {n_dms} decisores.
     """
     p_analitico = Paragraph(texto_analitico, analise_style)
 
@@ -341,7 +335,6 @@ def gerar_pdf_relatorio(
     elements.append(KeepTogether([t_quadro]))
     elements.append(Spacer(1, 8))
 
-    # 3. RASTREABILIDADE: ROC E CRITÉRIOS
     elements.append(
         Paragraph(
             "Rastreabilidade: Pesos ROC por Decisor e Tipos de Critérios",
@@ -403,7 +396,6 @@ def gerar_pdf_relatorio(
         )
     )
 
-    # EMBEDDING DE IDENTIDADE CORPORATIVA E DIREITOS AUTORAIS NO RODAPÉ DO PDF
     logo_cell = ""
     if logo_file:
         try:
@@ -462,7 +454,6 @@ st.set_page_config(
     page_title="DSS | CPP-ROC RANKING", page_icon="📈", layout="wide"
 )
 
-# ESTILIZAÇÃO CSS
 st.markdown(
     """
     <style>
@@ -656,20 +647,23 @@ with st.sidebar.expander("Identidade Corporativa (PDF)", expanded=False):
     st.text_area("Endereço", key="emp_end", height=70)
 
 # LOGO NO TOPO
-col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
+col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
 with col_l2:
+    url_logo_github = "https://raw.githubusercontent.com/Rogerleite1305/CPP-ROC-CHOISE/main/LOGO%20CPP-ROC-RANKING.png"
     try:
-        url_logo_github = "https://raw.githubusercontent.com/Rogerleite1305/CPP-ROC-CHOISE/main/LOGO%20CPP-ROC-RANKING.png"
-        st.image(url_logo_github, width=220)
+        st.image(url_logo_github, use_container_width=True)
     except Exception:
-        pass
+        try:
+            st.image("LOGO CPP-ROC-RANKING.png", use_container_width=True)
+        except Exception:
+            pass
 
 # CABEÇALHO PRINCIPAL
 st.markdown(
     """
     <div class="main-header">
         <h1>Decision Support System — CPP-ROC RANKING</h1>
-        <p>Sistema de Apoio à Decisão Multicritério com Múltiplos Decisores Sob Incerteza Para a Problemática de Ordenação (Ranking - Eq. 1 a 18)</p>
+        <p>Sistema de Apoio à Decisão Multicritério com Múltiplos Decisores Sob Incerteza Para a Problemática de Ordenação</p>
     </div>
 """,
     unsafe_allow_html=True,
@@ -682,17 +676,17 @@ tab_app, tab_sens, tab_manual = st.tabs(
 with tab_manual:
     st.markdown(
         """
-    ### **MANUAL DO USUÁRIO — MÉTODO CPP-ROC RANKING (EQ. 1 A 18)**
+    ### **MANUAL DO USUÁRIO — MÉSTATIC CPP-ROC RANKING**
 
     O **CPP-ROC RANKING** combina a **Composição Probabilística de Preferências (CPP)** com os pesos **ROC (Rank Order Centroid)** para gerar uma ordenação completa de alternativas sob múltiplos critérios e julgamentos de decisores.
 
     ---
 
-    #### **1. Estrutura Matemática das 18 Equações**
-    1. **Pesos ROC (Eq. 1):** Ponderação baseada no ranking do critério $w_k = \frac{1}{N} \sum_{j=k}^N \frac{1}{j}$.
-    2. **Estimativa Estocástica (Eq. 1–7):** Mapeamento das notas dos decisores em média $\mu_{ij}$ e variância $\sigma_{ij}^2$.
-    3. **Dominância Par a Par (Eq. 8–12):** Cálculo de $P(X_i > X_j)$ via distribuição acumulada normal com a função Erro ($\text{erf}$).
-    4. **Score Global e Ranking (Eq. 13–18):** Agregação da matriz $P_{ij}$ ponderada pelos pesos ROC, computando o score e a posição das alternativas.
+    #### **1. Estrutura Matemática do Método**
+    1. **Pesos ROC:** Ponderação baseada na ordem de priorização do critério.
+    2. **Estimativa Estocástica:** Mapeamento das notas dos decisores em média e variância.
+    3. **Dominância Par a Par:** Cálculo da probabilidade de dominância via distribuição acumulada normal.
+    4. **Score Global e Ranking:** Agregação da matriz de dominância ponderada pelos pesos ROC, computando o score e a ordenação final das alternativas.
     """
     )
 
@@ -756,7 +750,6 @@ with tab_app:
         st.session_state["calculo_executado"] = True
 
     if st.session_state.get("calculo_executado", False):
-        # Execução Agregada para Múltiplos Decisores
         matriz_3d = np.array(matrizes_dms)
         scores_agregados = np.zeros(n_alt)
         detalhes_dms = []
@@ -823,7 +816,6 @@ with tab_app:
             unsafe_allow_html=True,
         )
 
-        # Botão para Download do PDF
         pdf_bytes = gerar_pdf_relatorio(
             df_ranking=df_res,
             resultado_completo=res_final,
