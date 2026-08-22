@@ -154,9 +154,10 @@ def callback_atualizar_cep():
         st.session_state["emp_end"] = end_encontrado
 
 
-def gerar_grafico_ranking(df_ranking, para_impressao=False):
+def gerar_figura_matplotlib(df_ranking, para_impressao=False):
+    """Gera o objeto fig (Matplotlib) para uso no Streamlit e buffer para o PDF."""
     figsize = (6.5, 3.2) if not para_impressao else (6.5, 2.5)
-    dpi = 300 if para_impressao else 150
+    dpi = 300 if para_impressao else 120
 
     fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
     y_pos = np.arange(len(df_ranking))
@@ -179,8 +180,14 @@ def gerar_grafico_ranking(df_ranking, para_impressao=False):
     ax.spines["right"].set_visible(False)
 
     plt.tight_layout()
+    return fig
+
+
+def gerar_grafico_ranking(df_ranking, para_impressao=False):
+    """Gera um buffer de imagem a partir do gráfico."""
+    fig = gerar_figura_matplotlib(df_ranking, para_impressao=para_impressao)
     buf = io.BytesIO()
-    plt.savefig(buf, format="png", bbox_inches="tight")
+    fig.savefig(buf, format="png", bbox_inches="tight")
     plt.close(fig)
     buf.seek(0)
     return buf
@@ -797,12 +804,22 @@ with tab_app:
 
         st.markdown("### 🏆 Resultado Final do Ranking")
 
-        st.dataframe(
-            df_res.style.format({"Score CPP-RANKING": "{:.4f}"}).highlight_min(
-                subset=["Posição"], color="#d1fae5"
-            ),
-            use_container_width=True,
-        )
+        # Exibição em duas colunas: Tabela + Gráfico
+        col_res_tab, col_res_graf = st.columns([1, 1])
+
+        with col_res_tab:
+            st.markdown("#### **Tabela de Posicionamento**")
+            st.dataframe(
+                df_res.style.format({"Score CPP-RANKING": "{:.4f}"}).highlight_min(
+                    subset=["Posição"], color="#d1fae5"
+                ),
+                use_container_width=True,
+            )
+
+        with col_res_graf:
+            st.markdown("#### **Visualização do Ranking**")
+            fig_preview = gerar_figura_matplotlib(df_res, para_impressao=False)
+            st.pyplot(fig_preview)
 
         vencedor_nome = nomes_alt_globais[ordem_indices[0]]
         vencedor_score = score_final[ordem_indices[0]]
